@@ -7,7 +7,7 @@ import java.net.InetAddress;
 
 public class Packet {
 
-	static final int LOGIN = 0, DISCONNECT = 1, WORD = 2, LETTER = 3;
+	static final int LOGIN = 0, DISCONNECT = 1, WORD = 2, LETTER = 3, SUGGEST = 4;
 	
 	
 	private InetAddress ip;
@@ -32,26 +32,80 @@ public class Packet {
 		DatagramPacket receivePacket = new DatagramPacket(buffer, buffer.length, ip, port);
 		socket.receive(receivePacket);
 		
-		String sp[] = new String(receivePacket.getData()).split(",");
+		String data = new String(receivePacket.getData())
+		String sp[] = data.split(",");
 		
-		if (sp[0].equals(String.valueOf(Packet.LOGIN)))
+		if (sp[0].equals(String.valueOf(LOGIN)))			//receive
+		{
+			return new PacketLogin(data);
+		}
+		if (sp[0].equals(String.valueOf(DISCONNECT)))		//receive and send
 		{
 			return new ;
 		}
-		if (sp[0].equals(String.valueOf(Packet.DISCONNECT)))
+		if (sp[0].equals(String.valueOf(WORD)))				//receive and send
 		{
-			return new Client_PacketDisconnect();
+			return new ;
 		}
-		if (sp[0].equals(String.valueOf(Packet.OTHER_COORDS)))
+		if (sp[0].equals(String.valueOf(Packet.LETTER)))	//receive and send
 		{
-			return new Client_PacketOtherCoords(data);
-		}
-		if (sp[0].equals(String.valueOf(Packet.OTHER_SHOOT)))
-		{
-			return new Client_PacketOtherShoot(data);
+			return new ;
 		}
 		
 		return null;
 	}
+	
+	
+}
+
+
+class PacketLogin extends Packet
+{
+	private String data, username;
+	
+	public PacketLogin(String data)
+	{
+		this.data = data;
+		String sp[] = data.split(",");
+		username = sp[1];
+	}
+	
+	public String getUsername()
+	{
+		return username;
+	}
+	
+	public String toString()
+	{
+		return data;
+	}
+}
+
+class PacketDisconnect extends Packet
+{
+	private String data;
+	
+	public PacketDisconnect(String dataormessage)
+	{
+		this.data = dataormessage;
+	}
+	
+	public String toString()
+	{
+		return data;
+	}
+}
+
+class PacketWord extends Packet				//T9 processing for word suggestions
+{
+	public PacketWord(String data)
+	{
+		
+	}
+	public PacketWord()
+}
+
+class PacketLetter
+{
 	
 }
