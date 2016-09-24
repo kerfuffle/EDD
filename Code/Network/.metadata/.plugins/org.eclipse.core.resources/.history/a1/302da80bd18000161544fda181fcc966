@@ -5,18 +5,10 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
-import static net.kerfuffle.RaspiServer.Global.*;
-
 public class Packet {
 
 	static final int LOGIN = 0, DISCONNECT = 1, WORD = 2, LETTER = 3, SUGGEST = 4;
 	
-	protected String data;
-	
-	public Packet(String data)
-	{
-		this.data = data;
-	}
 	
 	private InetAddress ip;
 	private int port;
@@ -41,7 +33,7 @@ public class Packet {
 		socket.receive(receivePacket);
 		
 		String data = new String(receivePacket.getData())
-		String sp[] = data.split(termStr);
+		String sp[] = data.split(",");
 		
 		if (sp[0].equals(String.valueOf(LOGIN)))			//receive
 		{
@@ -49,15 +41,15 @@ public class Packet {
 		}
 		if (sp[0].equals(String.valueOf(DISCONNECT)))		//receive and send
 		{
-			return new PacketDisconnect(data);
+			return new ;
 		}
 		if (sp[0].equals(String.valueOf(WORD)))				//receive and send
 		{
-			return new PacketWord(data);
+			return new ;
 		}
-		if (sp[0].equals(String.valueOf(LETTER)))			//receive and send
+		if (sp[0].equals(String.valueOf(Packet.LETTER)))	//receive and send
 		{
-			return new PacketLetter(data);
+			return new ;
 		}
 		
 		return null;
@@ -74,7 +66,7 @@ class PacketLogin extends Packet
 	public PacketLogin(String data)
 	{
 		this.data = data;
-		String sp[] = data.split(termStr);
+		String sp[] = data.split(",");
 		username = sp[1];
 	}
 	
@@ -106,46 +98,14 @@ class PacketDisconnect extends Packet
 
 class PacketWord extends Packet				//T9 processing for word suggestions
 {
-	private String data;
-	
-	public PacketWord(String dataorword)
-	{
-		if (dataorword.contains(termStr))	//from Packet
-		{
-			String sp[] = dataorword.split(termStr);
-			data = sp[1];
-		}
-		else								//from server
-		{
-			data = dataorword;
-		}
-	}
-	
-	public String toString()
-	{
-		return data;
-	}
-}
-
-class PacketLetter extends Packet
-{
-	
-	public PacketLetter(String dataorletter)
+	public PacketWord(String data)
 	{
 		
-		if (dataorletter.contains(termStr))
-		{
-			String sp[] = dataorletter.split(termStr);
-			data = sp[1];
-		}
-		else
-		{
-			super(dataorletter);
-		}
 	}
+	public PacketWord()
+}
+
+class PacketLetter
+{
 	
-	public String toString()
-	{
-		return data;
-	}
 }
