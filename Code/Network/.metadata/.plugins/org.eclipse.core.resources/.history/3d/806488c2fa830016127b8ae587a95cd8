@@ -12,15 +12,10 @@ public class Packet {
 	static final int LOGIN = 0, DISCONNECT = 1, WORD = 2, LETTER = 3, SUGGEST = 4;
 	
 	protected String data;
-	protected int id;
 	
 	private InetAddress ip;
 	private int port;
 	
-	public int getId()
-	{
-		return id;
-	}
 	
 	public static void sendPacket(Packet p, DatagramSocket socket, InetAddress ip, int port) throws IOException
 	{
@@ -34,10 +29,10 @@ public class Packet {
 		socket.send(sendPacket);
 	}
 	
-	public static Packet receivePacket(DatagramSocket socket) throws IOException
+	public static Packet receivePacket(DatagramSocket socket, InetAddress ip, int port) throws IOException
 	{
 		byte buffer[] = new byte[256];
-		DatagramPacket receivePacket = new DatagramPacket(buffer, buffer.length);
+		DatagramPacket receivePacket = new DatagramPacket(buffer, buffer.length, ip, port);
 		socket.receive(receivePacket);
 		
 		String data = new String(receivePacket.getData());
@@ -73,7 +68,6 @@ class PacketLogin extends Packet
 	
 	public PacketLogin(String data)
 	{
-		id = LOGIN;
 		this.data = data;
 		String sp[] = data.split(termStr);
 		username = sp[1];
@@ -91,10 +85,9 @@ class PacketLogin extends Packet
 }
 
 class PacketDisconnect extends Packet
-{	
+{
 	public PacketDisconnect(String dataormessage)
 	{
-		id = DISCONNECT;
 		this.data = dataormessage;
 	}
 	
@@ -108,7 +101,6 @@ class PacketWord extends Packet				//T9 processing for word suggestions
 {
 	public PacketWord(String dataorword)
 	{
-		id = WORD;
 		if (dataorword.contains(termStr))	//from Packet
 		{
 			String sp[] = dataorword.split(termStr);
@@ -130,7 +122,6 @@ class PacketLetter extends Packet
 {
 	public PacketLetter(String dataorletter)
 	{
-		id = LETTER;
 		if (dataorletter.contains(termStr))
 		{
 			String sp[] = dataorletter.split(termStr);

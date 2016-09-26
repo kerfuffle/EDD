@@ -84,7 +84,7 @@ class Receive extends Thread
 				
 				if (packet.getId() == LOGIN)
 				{
-					//		making receive process
+					
 				}
 				if (packet.getId() == DISCONNECT)
 				{

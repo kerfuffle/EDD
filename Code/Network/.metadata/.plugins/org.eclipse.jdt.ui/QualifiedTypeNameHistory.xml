@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
 <fullyQualifiedTypeName name="java.net.InetAddress"/>
-<fullyQualifiedTypeName name="java.net.DatagramSocket"/>
 <fullyQualifiedTypeName name="java.io.IOException"/>
 <fullyQualifiedTypeName name="java.net.DatagramPacket"/>
+<fullyQualifiedTypeName name="javax.swing.JOptionPane"/>
+<fullyQualifiedTypeName name="java.net.DatagramSocket"/>
+<fullyQualifiedTypeName name="java.util.Scanner"/>
 </qualifiedTypeNameHistroy>

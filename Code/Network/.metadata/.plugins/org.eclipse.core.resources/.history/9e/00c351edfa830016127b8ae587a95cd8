@@ -82,19 +82,7 @@ class Receive extends Thread
 			{
 				Packet packet = receivePacket(socket);
 				
-				if (packet.getId() == LOGIN)
-				{
-					//		making receive process
-				}
-				if (packet.getId() == DISCONNECT)
-				{
-					
-				}
-				if (packet.getId() == LETTER)
-				{
-					
-				}
-				if (packet.getId() == WORD)
+				if (packet.id == LOGIN)
 				{
 					
 				}
