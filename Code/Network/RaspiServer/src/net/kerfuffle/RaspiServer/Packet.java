@@ -9,7 +9,7 @@ import static net.kerfuffle.RaspiServer.Global.*;
 
 public class Packet {
 
-	static final int LOGIN = 0, DISCONNECT = 1, WORD = 2, LETTER = 3, SUGGEST = 4;
+	static final int LOGIN = 0, DISCONNECT = 1, WORD = 2, LETTER = 3, SUGGEST = 4, CURRENT_LETTER = 5;
 	
 	protected String data;
 	protected int id;
@@ -20,6 +20,11 @@ public class Packet {
 	public int getId()
 	{
 		return id;
+	}
+	
+	public String toString()
+	{
+		return data;
 	}
 	
 	public static void sendPacket(Packet p, DatagramSocket socket, InetAddress ip, int port) throws IOException
@@ -84,10 +89,6 @@ class PacketLogin extends Packet
 		return username;
 	}
 	
-	public String toString()
-	{
-		return data;
-	}
 }
 
 class PacketDisconnect extends Packet
@@ -96,11 +97,6 @@ class PacketDisconnect extends Packet
 	{
 		id = DISCONNECT;
 		this.data = dataormessage;
-	}
-	
-	public String toString()
-	{
-		return data;
 	}
 }
 
@@ -119,15 +115,10 @@ class PacketWord extends Packet				//T9 processing for word suggestions
 			data = dataorword;
 		}
 	}
-	
-	public String toString()
-	{
-		return data;
-	}
 }
 
-class PacketLetter extends Packet
-{
+class PacketLetter extends Packet			// make sure to keep track and build string (release after word creation confirmed)
+{											// doubles for current_letter packet(depricated)
 	public PacketLetter(String dataorletter)
 	{
 		id = LETTER;
@@ -141,9 +132,23 @@ class PacketLetter extends Packet
 			data = dataorletter;
 		}
 	}
-	
-	public String toString()
+}
+
+class PacketSuggest extends Packet				//sent based on current letters being built
+{
+	public PacketSuggest(String suggestion)			//obvi handled somewhere else (prob after receiving building letters)
 	{
-		return data;
+		id = SUGGEST;
+		data = suggestion;
+	}
+}
+
+class PacketCurrentLetter extends Packet			
+{
+	public PacketCurrentLetter(String data)
+	{
+		id = CURRENT_LETTER;
+		
+		
 	}
 }
