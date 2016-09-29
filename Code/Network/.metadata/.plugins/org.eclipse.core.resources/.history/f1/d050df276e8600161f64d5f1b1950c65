@@ -3,9 +3,6 @@ package net.kerfuffle.RaspiServer;
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Scanner;
 
 import javax.swing.JOptionPane;
@@ -16,7 +13,6 @@ public class Server{
 
 	private int port;
 	private DatagramSocket socket;
-	private List users = Collections.synchronizedList(new ArrayList<User>());
 	
 	private Receive rp;
 	private Send sp;
@@ -88,7 +84,7 @@ class Receive extends Thread
 				
 				if (packet.getId() == LOGIN)
 				{
-					
+					//		making receive process
 				}
 				if (packet.getId() == DISCONNECT)
 				{

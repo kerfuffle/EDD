@@ -9,7 +9,7 @@ import static net.kerfuffle.RaspiServer.Global.*;
 
 public class Packet {
 
-	static final int LOGIN = 0, DISCONNECT = 1, WORD = 2, LETTER = 3, SUGGEST = 4;
+	static final int LOGIN = 0, DISCONNECT = 1, WORD = 2, LETTER = 3, SUGGEST = 4, CURRENT_LETTER = 5;
 	
 	protected String data;
 	protected int id;
@@ -140,5 +140,15 @@ class PacketSuggest extends Packet				//sent based on current letters being buil
 	{
 		id = SUGGEST;
 		data = suggestion;
+	}
+}
+
+class PacketCurrentLetter extends Packet			
+{
+	public PacketCurrentLetter(String data)
+	{
+		id = CURRENT_LETTER;
+		
+		
 	}
 }

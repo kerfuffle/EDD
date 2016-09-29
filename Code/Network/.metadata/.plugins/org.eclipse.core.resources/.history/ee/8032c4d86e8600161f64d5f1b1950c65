@@ -5,7 +5,6 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Scanner;
 
 import javax.swing.JOptionPane;
@@ -16,7 +15,7 @@ public class Server{
 
 	private int port;
 	private DatagramSocket socket;
-	private List users = Collections.synchronizedList(new ArrayList<User>());
+	private ArrayList<User> users = Collections.synchronizedList(ArrayList<User>);
 	
 	private Receive rp;
 	private Send sp;

@@ -1,5 +1,5 @@
 package net.kerfuffle.RaspiServer;
 
-public class Global {
+public class User {
 
 }
