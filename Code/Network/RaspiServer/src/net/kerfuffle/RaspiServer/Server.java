@@ -2,6 +2,7 @@ package net.kerfuffle.RaspiServer;
 
 import java.io.IOException;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,7 +17,8 @@ public class Server{
 
 	private int port;
 	private DatagramSocket socket;
-	private List users = Collections.synchronizedList(new ArrayList<User>());
+	public List users = Collections.synchronizedList(new ArrayList<User>());
+	public Patient patient;
 	
 	private Receive rp;
 	private Send sp;
@@ -50,8 +52,10 @@ public class Server{
 	{
 		return socket;
 	}
-	
-	
+	public List getUsers()
+	{
+		return users;
+	}
 	
 	
 	
@@ -70,12 +74,16 @@ class Receive extends Thread
 {
 	private DatagramSocket socket;
 	private Server server;
+	private List<User> users;
+	private Patient patient;
 	
 	public Receive(Server server)
 	{
 		super("Receive Thread");
 		this.socket = server.getSocket();
 		this.server = server;
+		this.users = server.users;
+		this.patient = server.patient;
 	}
 	
 	public void run()
@@ -88,18 +96,49 @@ class Receive extends Thread
 				
 				if (packet.getId() == LOGIN)
 				{
+					PacketLogin p = (PacketLogin) packet;
+					users.add(new User(p.getUsername(), p.getIp(), p.getPort()));
+					
 					
 				}
 				if (packet.getId() == DISCONNECT)
 				{
-					
+					PacketDisconnect p = (PacketDisconnect)packet;
+					users.remove(lookupUser(p.getIp()));
 				}
-				if (packet.getId() == LETTER)
+				if (packet.getId() == LETTER)							//letter selected (actually confirmed as correct letter)
 				{
+					PacketLetter p = (PacketLetter)packet;
+					patient.currentLetter = p.toString();
 					
-				}
-				if (packet.getId() == WORD)
-				{
+					if (patient.currentLetter.equals("[CREATE_WORD]"))			//declare new word and send to clients
+					{
+						patient.newWord();
+						PacketDoneWord pdone = new PacketDoneWord(patient.getCurrentWord());
+						for (User u : users)
+						{
+							sendPacket(pdone, socket, u.getIp(), u.getPort());
+						}
+					}
+					else if (patient.currentLetter.equals("[REMOVE_LAST]"))			//backspace
+					{
+						patient.removeLastLetter();
+						PacketBuildWord pbuild = new PacketBuildWord(patient.getCurrentWord());
+						for (User u : users)
+						{
+							sendPacket(pbuild, socket, u.getIp(), u.getPort());
+						}
+					}
+					else			//normal letter adding, send word being built to client
+					{
+						patient.addLetter(patient.currentLetter);
+						PacketBuildWord pbuild = new PacketBuildWord(patient.getCurrentWord());
+						for (User u : users)
+						{
+							sendPacket(pbuild, socket, u.getIp(), u.getPort());
+						}
+					}
+					
 					
 				}
 				
@@ -110,6 +149,34 @@ class Receive extends Thread
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	public int lookupUser(InetAddress ip)
+	{
+		int i = 0;
+		for (User u : users)
+		{
+			if (u.getIp().toString().equals(ip.toString()))
+			{
+				return i;
+			}
+			i++;
+		}
+		
+		return -1;
+	}
+	public int lookupUser(String username)
+	{
+		int i = 0;
+		for (User u : users)
+		{
+			if (u.getUsername().equals(username))
+			{
+				return i;
+			}
+		}
+		
+		return -1;
 	}
 }
 

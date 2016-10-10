@@ -1,0 +1,22 @@
+package net.kerfuffle.RaspiServer;
+
+import java.net.InetAddress;
+
+public class Patient extends User{
+
+	private char currentLetter;
+	private String lastWord;
+	
+	
+	public Patient (String username, InetAddress ip, int port)
+	{
+		super(username, ip, port);
+	}
+	
+	
+	public void addLetter(char c)
+	{
+		
+	}
+	
+}

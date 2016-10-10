@@ -9,7 +9,7 @@ import static net.kerfuffle.RaspiServer.Global.*;
 
 public class Packet {
 
-	static final int LOGIN = 0, DISCONNECT = 1, WORD = 2, LETTER = 3, SUGGEST = 4;
+	static final int LOGIN = 0, DISCONNECT = 1, WORD = 2, LETTER = 3, SUGGEST = 4, SUCCESS = 5, BUILD_WORD = 6, DONE_WORD = 7;
 	
 	protected String data;
 	protected int id;
@@ -17,15 +17,61 @@ public class Packet {
 	private InetAddress ip;
 	private int port;
 	
+	public Packet(InetAddress ip, int port)
+	{
+		this.ip = ip;
+		this.port = port;
+	}
+	public Packet(InetAddress ip, int port, String data)
+	{
+		this.ip = ip;
+		this.port = port;
+		this.data = data;
+	}
+	public Packet(){};
+	
 	public int getId()
 	{
 		return id;
 	}
 	
+	/**
+	 * Same as getData()
+	 */
 	public String toString()
 	{
 		return data;
 	}
+	/**
+	 * Same as toString()
+	 */
+	public String getData()
+	{
+		return data;
+	}
+	
+	public InetAddress getIp()
+	{
+		return ip;
+	}
+	public int getPort()
+	{
+		return port;
+	}
+	public String packData(String str)
+	{
+		return id+","+str+",";
+	}
+	public String packData(String[] strs)
+	{
+		String ret = ""+id+",";
+		for (int i = 0; i < strs.length; i++)
+		{
+			ret += strs[i] + ",";
+		}
+		return ret;
+	}
+	
 	
 	public static void sendPacket(Packet p, DatagramSocket socket, InetAddress ip, int port) throws IOException
 	{
@@ -48,21 +94,23 @@ public class Packet {
 		String data = new String(receivePacket.getData());
 		String sp[] = data.split(termStr);
 		
+		Packet ret = new Packet(receivePacket.getAddress(), receivePacket.getPort(), data);
+		
 		if (sp[0].equals(String.valueOf(LOGIN)))			//receive
 		{
-			return new PacketLogin(data);
+			return (PacketLogin)ret;
 		}
 		if (sp[0].equals(String.valueOf(DISCONNECT)))		//receive and send
 		{
-			return new PacketDisconnect(data);
+			return (PacketDisconnect)ret;
 		}
 		if (sp[0].equals(String.valueOf(WORD)))				//receive and send
 		{
-			return new PacketWord(data);
+			return (PacketWord)ret;
 		}
 		if (sp[0].equals(String.valueOf(LETTER)))			//receive and send
 		{
-			return new PacketLetter(data);
+			return (PacketLetter)ret;
 		}
 		
 		return null;
@@ -118,7 +166,7 @@ class PacketWord extends Packet				//T9 processing for word suggestions
 }
 
 class PacketLetter extends Packet			// make sure to keep track and build string (release after word creation confirmed)
-{											// doubles for current_letter packet(depricated)
+{											// doubles for current_letter packet(deprecated)
 	public PacketLetter(String dataorletter)
 	{
 		id = LETTER;
@@ -129,7 +177,7 @@ class PacketLetter extends Packet			// make sure to keep track and build string 
 		}
 		else
 		{
-			data = dataorletter;
+			data = packData(dataorletter);
 		}
 	}
 }
@@ -139,6 +187,33 @@ class PacketSuggest extends Packet				//sent based on current letters being buil
 	public PacketSuggest(String suggestion)			//obvi handled somewhere else (prob after receiving building letters)
 	{
 		id = SUGGEST;
-		data = suggestion;
+		data = packData(suggestion);
+	}
+}
+
+class PacketSuccess extends Packet
+{
+	public PacketSuccess(String message)
+	{
+		id = SUCCESS;
+		data = packData(message);
+	}
+}
+
+class PacketBuildWord extends Packet
+{
+	public PacketBuildWord(String word)
+	{
+		id = BUILD_WORD;
+		data = packData(word);
+	}
+}
+
+class PacketDoneWord extends Packet
+{
+	public PacketDoneWord(String word)
+	{
+		id = DONE_WORD;
+		data = packData(word);
 	}
 }
