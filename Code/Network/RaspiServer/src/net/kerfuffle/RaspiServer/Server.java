@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -14,7 +15,7 @@ import javax.swing.JOptionPane;
 import static net.kerfuffle.RaspiServer.Packet.*;
 
 public class Server{
-
+	
 	private int port;
 	private DatagramSocket socket;
 	public List users = Collections.synchronizedList(new ArrayList<User>());
@@ -22,6 +23,7 @@ public class Server{
 	
 	private Receive rp;
 	private Send sp;
+	private Console console;
 	
 	private boolean quit = false;
 	
@@ -35,7 +37,9 @@ public class Server{
 	{
 		rp = new Receive(this);
 		sp = new Send(this);
+		console = new Console(this);
 		
+		console.start();
 		rp.start();
 		sp.start();
 	}
@@ -59,17 +63,23 @@ public class Server{
 	
 	
 	
-	public static void main (String args[]) throws SocketException
+	public static void main (String args[]) throws SocketException, UnknownHostException
 	{
 		int port = Integer.parseInt(JOptionPane.showInputDialog("Port?"));
 		
 		Server server = new Server(port);
-		
+		server.start();
 		
 		
 	}
 }
 
+/**
+ * 10.11.16
+ * For now the server will only be receiving from the patient and sending to the client. (With the exception of T9 word replacing)
+ * Send process not needed, will only send to users as per receive from patient
+ *
+ */
 class Receive extends Thread
 {
 	private DatagramSocket socket;
@@ -94,12 +104,18 @@ class Receive extends Thread
 			{
 				Packet packet = receivePacket(socket);
 				
-				if (packet.getId() == LOGIN)
+				if (packet.getId() == LOGIN)			//right now only configured to watch, not participate    10.11.16
 				{
 					PacketLogin p = (PacketLogin) packet;
-					users.add(new User(p.getUsername(), p.getIp(), p.getPort()));
-					
-					
+					if (p.getUsername().equals("[PATIENT]"))
+					{
+						patient = new Patient("Patient", p.getIp(), p.getPort());
+						users.add(patient);
+					}
+					else
+					{
+						users.add(new User(p.getUsername(), p.getIp(), p.getPort()));
+					}
 				}
 				if (packet.getId() == DISCONNECT)
 				{
@@ -129,7 +145,7 @@ class Receive extends Thread
 							sendPacket(pbuild, socket, u.getIp(), u.getPort());
 						}
 					}
-					else			//normal letter adding, send word being built to client
+					else			//normal letter adding, send word being built to clients
 					{
 						patient.addLetter(patient.currentLetter);
 						PacketBuildWord pbuild = new PacketBuildWord(patient.getCurrentWord());
@@ -138,6 +154,15 @@ class Receive extends Thread
 							sendPacket(pbuild, socket, u.getIp(), u.getPort());
 						}
 					}
+					
+					
+					//word completion
+					
+					String suggestion = Util.suggest(patient.getCurrentWord());
+					PacketSuggest sug = new PacketSuggest(suggestion);
+					
+					//sending word suggestion to only patient
+					sendPacket(sug, socket, patient.getIp(), patient.getPort());
 					
 					
 				}
@@ -210,6 +235,16 @@ class Console extends Thread
 	{
 		super("Console Thread");
 		this.server = server;
+		out("Console Started!");
+	}
+	
+	public void out(String str)
+	{
+		System.out.println(str);
+	}
+	public void outError(String str)
+	{
+		System.err.println(str);
 	}
 	
 	public void run()
@@ -226,13 +261,13 @@ class Console extends Thread
 				if (sp[0].equals("stop"))
 				{
 					String reason = sp[1];
-					//send out reason for stopping
+					//send out reason for stopping to users
 					server.stop();
 				}
 				if (sp[0].equals("kick"))
 				{
-					String player = sp[1];
-					//search through "players", kick one matching name		(remove from list, send command to make them quit)
+					String user = sp[1];
+					//search through users, kick one matching name		(remove from list, send command to make them quit)
 				}
 			}
 			
