@@ -7,6 +7,10 @@ import java.net.InetAddress;
 
 import static net.kerfuffle.RaspiServer.Global.*;
 
+/**
+ * Server Class
+ */
+
 public class Packet {
 
 	static final int LOGIN = 0, DISCONNECT = 1, WORD = 2, LETTER = 3, SUGGEST = 4, SUCCESS = 5, BUILD_WORD = 6, DONE_WORD = 7;
