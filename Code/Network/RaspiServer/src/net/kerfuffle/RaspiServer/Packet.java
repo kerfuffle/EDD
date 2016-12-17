@@ -157,14 +157,14 @@ class PacketWord extends Packet				//T9 processing for word suggestions
 	public PacketWord(String dataorword)
 	{
 		id = WORD;
-		if (dataorword.contains(termStr))	//from Packet
+		if (dataorword.contains(termStr))	//receive from client
 		{
 			String sp[] = dataorword.split(termStr);
 			data = sp[1];
 		}
-		else								//from server
+		else								//send from server
 		{
-			data = dataorword;
+			data = packData(dataorword);
 		}
 	}
 }

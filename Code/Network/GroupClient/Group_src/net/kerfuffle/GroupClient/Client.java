@@ -10,6 +10,9 @@ public class Client {
 	private InetAddress serverIp;
 	private int serverPort;
 	
+	private Display display;
+	private SendReceive sr;
+	
 	public Client(InetAddress serverIp, int serverPort)
 	{
 		this.serverIp = serverIp;
@@ -18,7 +21,8 @@ public class Client {
 	
 	public void start()
 	{
-		
+		display.start();
+		sr.start();
 	}
 	
 	public static void main (String args[]) throws UnknownHostException
@@ -36,5 +40,29 @@ public class Client {
 	
 }
 
+class Display extends Thread
+{
+	public Display()
+	{
+		
+	}
+	
+	public void run()
+	{
+		
+	}
+}
 
-class 
+class SendReceive extends Thread
+{
+	public SendReceive()
+	{
+		
+	}
+	
+	public void run()
+	{
+		
+	}
+}
+

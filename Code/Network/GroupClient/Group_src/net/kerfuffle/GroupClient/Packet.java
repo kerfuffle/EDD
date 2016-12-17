@@ -5,11 +5,12 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
+import static net.kerfuffle.GroupClient.Global.*;
 
 public class Packet {
 
 	/**
-	 * Client
+	 * Group Client
 	 */
 
 	static final int LOGIN = 0, DISCONNECT = 1, WORD = 2, LETTER = 3, SUGGEST = 4, SUCCESS = 5, BUILD_WORD = 6, DONE_WORD = 7;
@@ -63,14 +64,14 @@ public class Packet {
 	}
 	public String packData(String str)
 	{
-		return id+","+str+",";
+		return id+(termStr)+str+(termStr);
 	}
 	public String packData(String[] strs)
 	{
-		String ret = ""+id+",";
+		String ret = ""+id+(termStr);
 		for (int i = 0; i < strs.length; i++)
 		{
-			ret += strs[i] + ",";
+			ret += strs[i] + (termStr);
 		}
 		return ret;
 	}
@@ -99,7 +100,7 @@ public class Packet {
 
 		Packet ret = new Packet(receivePacket.getAddress(), receivePacket.getPort(), data);
 
-		if (sp[0].equals(String.valueOf(LOGIN)))			//receive
+		if (sp[0].equals(String.valueOf(LOGIN)))			//send
 		{
 			return (PacketLogin)ret;
 		}
@@ -107,11 +108,11 @@ public class Packet {
 		{
 			return (PacketDisconnect)ret;
 		}
-		if (sp[0].equals(String.valueOf(WORD)))				//receive and send
+		if (sp[0].equals(String.valueOf(WORD)))				//receive
 		{
 			return (PacketWord)ret;
 		}
-		if (sp[0].equals(String.valueOf(LETTER)))			//receive and send
+		if (sp[0].equals(String.valueOf(LETTER)))			//receive
 		{
 			return (PacketLetter)ret;
 		}
@@ -122,3 +123,63 @@ public class Packet {
 
 }
 
+
+class PacketLogin extends Packet
+{
+	public PacketLogin(String username)
+	{
+		id = LOGIN;
+		data = username;
+	}
+}
+class PacketDisconnect extends Packet
+{
+	private String reason;
+	
+	public PacketDisconnect(String reasonOrData)
+	{
+		id = DISCONNECT;
+		
+		if (reasonOrData.contains(termStr))						//reason from server (server quitting)
+		{
+			String sp[] = reasonOrData.split(termStr);
+			reason = sp[1];
+		}
+		else													// reason from client (client quitting)
+		{
+			reason = reasonOrData;
+		}
+	}
+}
+class PacketWord extends Packet
+{
+	private String word;
+	
+	public PacketWord(String data)
+	{
+		id = WORD;
+		String sp[] = data.split(termStr);
+		word = sp[1];
+	}
+	
+	public String getWord()
+	{
+		return word;
+	}
+}
+class PacketLetter extends Packet
+{
+	private String letter;
+	
+	public PacketLetter(String data)
+	{
+		id = LETTER;
+		String sp[] = data.split(termStr);
+		letter = sp[1];
+	}
+	
+	public String getLetter()
+	{
+		return letter;
+	}
+}
