@@ -13,7 +13,8 @@ public class Packet {
 	 * Group Client
 	 */
 
-	static final int LOGIN = 0, DISCONNECT = 1, WORD = 2, LETTER = 3, SUGGEST = 4, SUCCESS = 5, BUILD_WORD = 6, DONE_WORD = 7;
+	static final int LOGIN = 0, DISCONNECT = 1, WORD = 2, LETTER = 3, SUGGEST = 4, SUCCESS = 5, BUILD_WORD = 6,
+			DONE_WORD = 7, ERROR = 8;
 
 	protected String data;
 	protected int id;
@@ -181,5 +182,39 @@ class PacketLetter extends Packet
 	public String getLetter()
 	{
 		return letter;
+	}
+}
+
+class PacketError extends Packet
+{
+	private String message;
+	
+	public PacketError(String data)
+	{
+		id = ERROR;
+		String sp[] = data.split(termStr);
+		message = sp[1];
+	}
+	
+	public String getMessage()
+	{
+		return message;
+	}
+}
+
+class PacketSuccess extends Packet
+{
+	private String message;
+	
+	public PacketSuccess(String data)
+	{
+		id = SUCCESS;
+		String sp[] = data.split(termStr);
+		message = sp[1];
+	}
+	
+	public String getMessage()
+	{
+		return message;
 	}
 }

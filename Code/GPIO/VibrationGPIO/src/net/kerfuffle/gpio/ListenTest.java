@@ -22,7 +22,7 @@ public class ListenTest {
                 // display pin state on console
                 System.out.println(" --> GPIO PIN STATE CHANGE: " + event.getPin() + " = " + event.getState());
             }
-
+            
         });
 		
 		Console console = new Console();
