@@ -1,0 +1,106 @@
+package net.kerfuffle.gpio;
+
+import java.util.Scanner;
+
+import com.pi4j.io.gpio.*;
+import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
+import com.pi4j.io.gpio.event.GpioPinListenerDigital;
+
+public class MainTest {
+
+	public static final int LED_BLINK = 0, VIBRATION_IN = 1;
+	
+	public static void main(String args[]) throws InterruptedException
+	{
+		
+		String progs[] = {"0 - LED BLINK", "1 - VIBRATION IN"};
+		
+		System.out.println("Program Started");
+		System.out.println("Choose a program to run...");
+		for (int i = 0; i < progs.length; i++)
+		{
+			System.out.println(progs[i]);
+		}
+		
+		Scanner scan = new Scanner(System.in);
+		int choice = scan.nextInt();
+		scan.close();
+		
+		if (choice == LED_BLINK)
+		{
+			
+		}
+		else if (choice == VIBRATION_IN)
+		{
+			
+		}
+		
+		
+		final GpioController gpio = GpioFactory.getInstance();
+		
+		final GpioPinDigitalInput vibe = gpio.provisionDigitalInputPin(RaspiPin.GPIO_21, PinPullResistance.PULL_DOWN);
+		
+		vibe.setShutdownOptions(true);
+		
+		vibe.addListener(new GpioPinListenerDigital() {
+            @Override
+            public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
+                // display pin state on console
+                System.out.println(" --> GPIO PIN STATE CHANGE: " + event.getPin() + " = " + event.getState());
+            }
+            
+        });
+		
+		Console console = new Console();
+		console.start();
+		
+		while (console.getAlive())
+		{
+			Thread.sleep(500);
+		}
+		
+		//gpio.shutdown();
+	}
+	
+}
+
+class Console implements Runnable
+{
+	private Thread t;
+	
+	private String command;
+	private boolean alive = false;
+	
+	public void run()
+	{
+		System.out.println("Console Started");
+		while (alive)
+		{
+			Scanner scan = new Scanner(System.in);
+			command = scan.nextLine();
+			
+			if (command.equals("quit"))
+			{
+				scan.close();
+				System.out.println("Program Terminated");
+				alive = false;
+			}
+		}
+	}
+	
+	public boolean getAlive()
+	{
+		return alive;
+	}
+	public String getLastCommand()
+	{
+		return command;
+	}
+	
+	public void start()
+	{
+		alive = true;
+		t = new Thread(this, "Console");
+		t.start();
+	}
+}
