@@ -18,7 +18,7 @@ public class LED_Blink {
 		this.con=con;
 		
 		 gpio = GpioFactory.getInstance();
-	     pin = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_01, "MyLED", PinState.HIGH);
+	     pin = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_00, "MyLED", PinState.LOW);
 	     pin.setShutdownOptions(true, PinState.LOW);
 	}
 	
@@ -26,17 +26,19 @@ public class LED_Blink {
 	{
 		while (con.isAlive())
 		{
-			if (con.getLastCommand().equalsIgnoreCase("led on"))
+			
+			if (con.getLastCommand().equalsIgnoreCase("led off"))
 			{
 				pin.low();
 			}
-			else if (con.getLastCommand().equalsIgnoreCase("led off"))
+			else if (con.getLastCommand().equalsIgnoreCase("led on"))
 			{
 				pin.high();
 			}
 			else if (con.getLastCommand().equalsIgnoreCase("led toggle"))
 			{
 				pin.toggle();
+				System.out.println("Toggled!");
 			}
 			else if (con.getLastCommand().toLowerCase().startsWith("led pulse"))
 			{
@@ -44,7 +46,10 @@ public class LED_Blink {
 				int ms = Integer.parseInt(sp[2]);
 				pin.pulse(ms, true);
 			}
+			
+			con.clearLastCommand();
 		}
-		 gpio.shutdown();
+		
+		gpio.shutdown();
     }
 }

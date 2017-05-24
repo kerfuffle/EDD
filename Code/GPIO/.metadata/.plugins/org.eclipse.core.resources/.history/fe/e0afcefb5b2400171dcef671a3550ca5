@@ -1,5 +1,5 @@
 package net.kerfuffle.gpio;
 
-public class LED_Blink {
+public class Finger {
 
 }

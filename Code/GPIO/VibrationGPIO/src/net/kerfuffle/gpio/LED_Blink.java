@@ -18,20 +18,14 @@ public class LED_Blink {
 		this.con=con;
 		
 		 gpio = GpioFactory.getInstance();
-	     pin = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_01, "MyLED", PinState.HIGH);
+	     pin = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_02, "MyLED", PinState.LOW);
 	     pin.setShutdownOptions(true, PinState.LOW);
 	}
-	
-	private String last;
 	
 	public void run()
 	{
 		while (con.isAlive())
 		{
-			if (con.getLastCommand().equals(last))
-			{
-				continue;
-			}
 			
 			if (con.getLastCommand().equalsIgnoreCase("led off"))
 			{
@@ -53,8 +47,9 @@ public class LED_Blink {
 				pin.pulse(ms, true);
 			}
 			
-			last = con.getLastCommand();
+			con.clearLastCommand();
 		}
-		 gpio.shutdown();
+		
+		gpio.shutdown();
     }
 }

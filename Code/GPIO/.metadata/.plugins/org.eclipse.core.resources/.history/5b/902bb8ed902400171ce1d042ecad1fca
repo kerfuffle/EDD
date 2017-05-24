@@ -24,9 +24,8 @@ public class MainTest {
 		
 		Scanner scan = new Scanner(System.in);
 		int choice = scan.nextInt();
-		scan.close();
 		
-		Console console = new Console();
+		Console console = new Console(scan);
 		console.start();
 		
 		if (choice == LED_BLINK)
@@ -46,16 +45,26 @@ class Console implements Runnable
 {
 	private Thread t;
 	
-	private String command;
+	private String command = "nothing";
 	private boolean alive = false;
+	
+	private Scanner scan;
+	
+	public Console(Scanner scan)
+	{
+		this.scan=scan;
+	}
 	
 	public void run()
 	{
 		System.out.println("Console Started");
 		while (alive)
 		{
-			Scanner scan = new Scanner(System.in);
-			command = scan.nextLine();
+			System.out.print(">");
+			if (command.contains(">"))
+			{
+				command = scan.nextLine().substring(1);
+			}
 			
 			if (command.equals("quit"))
 			{
@@ -73,6 +82,10 @@ class Console implements Runnable
 	public String getLastCommand()
 	{
 		return command;
+	}
+	public void clearLastCommand()
+	{
+		command = "nothing";
 	}
 	
 	public void start()

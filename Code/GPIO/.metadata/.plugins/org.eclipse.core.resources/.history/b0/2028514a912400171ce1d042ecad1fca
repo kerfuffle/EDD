@@ -62,8 +62,6 @@ class Console implements Runnable
 		{
 			command = scan.nextLine();
 			
-			System.out.println(">>**     " + command);
-			
 			if (command.equals("quit"))
 			{
 				scan.close();
@@ -80,6 +78,10 @@ class Console implements Runnable
 	public String getLastCommand()
 	{
 		return command;
+	}
+	public void clearLastCommand()
+	{
+		command = "nothing";
 	}
 	
 	public void start()

@@ -7,4 +7,5 @@
 <fullyQualifiedTypeName name="com.pi4j.io.gpio.RaspiPin"/>
 <fullyQualifiedTypeName name="com.pi4j.io.gpio.GpioPinDigitalOutput"/>
 <fullyQualifiedTypeName name="com.pi4j.io.gpio.PinState"/>
+<fullyQualifiedTypeName name="com.pi4j.io.gpio.Pin"/>
 </qualifiedTypeNameHistroy>

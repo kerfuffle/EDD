@@ -20,7 +20,7 @@ public class Vibration_In {
 		this.con=con;
 		
 		gpio = GpioFactory.getInstance();
-		vibe = gpio.provisionDigitalInputPin(RaspiPin.GPIO_02, PinPullResistance.PULL_DOWN);
+		vibe = gpio.provisionDigitalInputPin(RaspiPin.GPIO_21, PinPullResistance.PULL_DOWN);
 		vibe.setShutdownOptions(true);
 	}
 	
@@ -40,8 +40,6 @@ public class Vibration_In {
 		{
 			
 		}
-		
-		gpio.shutdown();
 	}
 	
 }

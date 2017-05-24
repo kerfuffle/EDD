@@ -35,7 +35,8 @@ public class MainTest {
 		}
 		else if (choice == VIBRATION_IN)
 		{
-			
+			Vibration_In vi = new Vibration_In(console);
+			vi.run();
 		}
 	}
 	
@@ -78,6 +79,10 @@ class Console implements Runnable
 	public String getLastCommand()
 	{
 		return command;
+	}
+	public void clearLastCommand()
+	{
+		command = "nothing";
 	}
 	
 	public void start()
